@@ -12,10 +12,6 @@ const connection=mysql.createConnection({
     database:'heroku_033692b967cfb7c'
  });
 
- // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
-// parse application/json
-app.use(bodyParser.json())
 
 app.get("/",(req,res)=>{
     res.send("Hello world");
@@ -46,22 +42,7 @@ app.get('/selectall',function(req,res){
     res.end
  });
  
- //insert 
- app.post('/car',function(req,res){
  
-    const caritem=req.body;
- 
-    const sql='insert into carspec values(?,?,?,?,?,?)';
-    connection.query(sql,[caritem.id,caritem.carBrand,caritem.carModel,caritem.carHp,caritem.carTq,caritem.price],(err,rows,fields)=>{ 
-       if(!err){
-          console.log('success select by id');
-          res.json(rows);
-       }else{
-          console.log(err);
-       }     
-    });
-    res.end
- }); 
  
 app.listen(port,() =>{
     console.log(`http:localhost: ${port}`);
