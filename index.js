@@ -29,20 +29,18 @@ app.get('/selectall',function(req,res){
  })
  
  //select by id
- app.get('/person/:id',async(req,res)=>{
+ //app.get('/person/:id',async(req,res)=>{
  
-    connection.query("select * from person where id=?",[req.params.id],(err,rows,fields)=>{ 
-       if(!err){
-          console.log('success select by id');
-          res.json(rows);
-       }else{
-          console.log(err);
-       }     
-    });
-    res.end
- });
- 
- 
+    //connection.query("select * from person where id=?",[req.params.id],(err,rows,fields)=>{ 
+       //if(!err){
+          //console.log('success select by id');
+          //res.json(rows);
+       //}else{
+          //console.log(err);
+       //}     
+    //});
+    //res.end
+ //});
  
 app.listen(port,() =>{
     console.log(`http:localhost: ${port}`);
