@@ -1,54 +1,48 @@
 const express = require("express");
-const app = express();
-const mysql=require('mysql');
-var bodyParser = require('body-parser')
-let port=process.env.PORT || 3000;
+const mysql = require('mysql')
+const bodyParser = require('body-parser');
+const { request, response } = require("express");
+
+const app= express()
+const port=process.env.PORT || 3000;
 
 //connect to database
-const connection=mysql.createConnection({
+const pool=mysql.createPool({
+    connectionLimit : 10,
     host: 'us-cdbr-east-03.cleardb.com',
     user: 'b61f61551323c3',
     password: '7c837d4f',
     database:'heroku_033692b967cfb7c'
  });
 
+ //get all data
+ app.get('',(request,response) =>{  // arrow function
 
-app.get("/",(req,res)=>{
-    res.send("Hello world");
-});
-
-//select all data
-app.get('/selectall',function(req,res){
-
-    connection.query("select * from person",(err,rows,fields)=>{    
-       console.log("selectall");
-       res.json(rows);
-    });
-    res.end
- 
- })
- 
- //select by id
- app.get('/person/:id',async(req,res)=>{
- 
-    connection.query("select * from person where id=?",[req.params.id],(err,rows,fields)=>{ 
-       if(!err){
-          console.log('success select by id');
-          res.json(rows);
-       }else{
-          console.log(err);
-       }     
-    });
-    res.end
+   pool.getConnection((error,connection)=>{
+      if (error) throw error
+      console.log(`connect as id ${connection.threadId}`);
+      connection.query('select * from person',(err,row)=>{        
+         connection.release(); //resturn the connection to pool
+         if(!err){response.send(row)}
+         else{console.log(err)}
+      })
+   });
  });
- 
-app.listen(port,() =>{
-    console.log(`http:localhost: ${port}`);
-    //test connection
-    connection.connect(function(err) {
-        if (err) {
-          return console.error('error: ' + err.message);
-        }   
-        console.log('Connected to the MySQL Server.');
-      });
-});         
+
+ //get data by id
+ app.get('/:id',(request,response) =>{  // arrow function
+
+   pool.getConnection((error,connection)=>{
+      if (error) throw error
+      console.log(`connect as id ${connection.threadId}`);
+      connection.query('select * from person where id =?',[request.params.id],(err,row)=>{        
+         connection.release(); //return the connection to pool
+         if(!err){response.send(row)}
+         else{console.log(err)}
+      })
+   });
+ });
+
+
+
+ app.listen(port,() =>{console.log(`http:localhost:${port}`);});  
